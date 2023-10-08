@@ -1,12 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { AuthDTO } from './dto/auth.dto';
+import { passwordHasher } from '../../helpers/bcrypt';
+import { DatabaseService } from './auth.repository';
 
 @Injectable()
 export class AuthService {
-  constructor() {}
+  constructor(private databaseService: DatabaseService) {}
 
   // Create account
-  async CreateAccount() {
-    return { message: 'Registration Successful' };
+  async CreateAccount(userDTO: AuthDTO) {
+    const { email, password } = userDTO;
+
+    // Check if user already exists
+    const existingUser = await this.databaseService.getUserByEmail(email);
+
+    if (existingUser) {
+      throw new BadRequestException('Email already exists!');
+    }
+
+    // hash the plain password
+    const hashedPassword = await passwordHasher(password);
+
+    // Save new user to database
+    const newUser = await this.databaseService.saveNewUser(
+      email,
+      hashedPassword,
+    );
+
+    return newUser;
   }
 
   // User SignIn

@@ -1,5 +1,6 @@
-import { Controller, Post, Get } from '@nestjs/common';
+import { Controller, Post, Get, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { AuthDTO } from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -7,8 +8,8 @@ export class AuthController {
 
   // 01. Create acount - allow user register using email and password
   @Post('register')
-  async Register() {
-    return await this.authService.CreateAccount();
+  async Register(@Body() userDTO: AuthDTO) {
+    return await this.authService.CreateAccount(userDTO);
   }
 
   // 02. sign in - enable registered user to sign in by providing their email and password
