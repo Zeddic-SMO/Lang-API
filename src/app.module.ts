@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './modules/auth/auth.module';
-import { MailModule } from './modules/mail/mail.module';
+import { MailerHelperModule } from './modules/mailer-helper/mailer-helper.module';
 
 @Module({
-  imports: [AuthModule, MailModule],
+  imports: [AuthModule, MailerHelperModule],
 })
 export class AppModule {}

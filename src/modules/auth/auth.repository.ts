@@ -1,3 +1,4 @@
+// eslint-disable-next-line prettier/prettier
 import { PrismaService } from 'prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 

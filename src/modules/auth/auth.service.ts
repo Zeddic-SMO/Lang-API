@@ -5,9 +5,14 @@ import { DatabaseService } from './auth.repository';
 
 @Injectable()
 export class AuthService {
-  constructor(private databaseService: DatabaseService) {}
+  constructor(private readonly databaseService: DatabaseService) {}
 
-  // Create account
+  /**
+   * This services function handles user account creation
+   * @param {Object} userDTO - These are the user inputted information
+   * @return
+   */
+
   async CreateAccount(userDTO: AuthDTO) {
     const { email, password } = userDTO;
 
@@ -22,17 +27,28 @@ export class AuthService {
     const hashedPassword = await passwordHasher(password);
 
     // Save new user to database
-    const newUser = await this.databaseService.saveNewUser(
+    /*   const newUser = await this.databaseService.saveNewUser(
       email,
       hashedPassword,
-    );
+    ); */
 
-    return newUser;
+    // Generate verification link
+    const verifyLink = 'Hello here is the verification link';
+
+    // Send verification Link
+    /*  await this.emailService.sendMail(
+      'ictzoid@gmail.com',
+      'Email/Account Verification',
+      verifyLink,
+    ); */
+
+    // return newUser;
+    return 'Created successfully!';
   }
 
   // User SignIn
   async UserSignIn() {
-    return { message: 'User loggin successful' };
+    return { message: '' };
   }
 
   // Verify User Account
