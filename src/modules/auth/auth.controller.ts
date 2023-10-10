@@ -1,7 +1,7 @@
 import { Controller, Post, Get, Body, Param, Put } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from "express"
-import { registerDTO, signInDTO } from './dto/auth.dto';
+import { emailTDO, registerDTO, signInDTO } from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -33,8 +33,8 @@ export class AuthController {
 
   // 05. Forgot Password - initiate the forgot password when user inputs emails
   @Post('forgot-password')
-  async InitiateResetPassword() {
-    return this.authService.InitateForgotPassword();
+  async InitiateResetPassword(@Body() emailTDO: emailTDO) {
+    return this.authService.InitateForgotPassword(emailTDO);
   }
 
   // 07. Validate Password Reset - validate the password reset token provided to the user

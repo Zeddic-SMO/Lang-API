@@ -27,3 +27,8 @@ export class signInDTO {
   @Length(5, 20, { message: 'Password must be between 5 to 20 characters' })
   readonly password: string;
 }
+
+export class emailTDO {
+  @IsEmail()
+  readonly email: string
+}

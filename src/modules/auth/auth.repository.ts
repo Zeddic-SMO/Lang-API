@@ -34,7 +34,6 @@ export class authRepository {
       return {
         success: true,
         message: "success",
-        data: response
       }
     } catch (error) {
       throw new BadRequestException("Internal Server Error")

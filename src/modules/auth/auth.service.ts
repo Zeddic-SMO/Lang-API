@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { registerDTO, signInDTO } from './dto/auth.dto';
+import { BadRequestException, NotFoundException, Injectable } from '@nestjs/common';
+import { emailTDO, registerDTO, signInDTO } from './dto/auth.dto';
 import { comparePassword, passwordHasher } from '../../helpers/bcrypt';
 import { authRepository } from './auth.repository';
 import { MailerHelperService } from '../mailer-helper/mailer-helper.service';
@@ -110,8 +110,32 @@ export class AuthService {
   }
 
   // Forgot password Service
-  async InitateForgotPassword() {
-    return { message: 'password reset link sent to email' };
+  async InitateForgotPassword(emailTDO: emailTDO) {
+    const { email } = emailTDO
+
+    // check if user exists
+    const isUser = await this.repository.getUserByEmail(email)
+    if (!isUser) {
+      throw new NotFoundException("User does not exists!")
+    }
+
+    // generate a token 
+    const token = this.jwtHandler.generateToken({ id: isUser.id, email: isUser.email }, '24h')
+    const link = `${process.env.APP_HOST}/auth/forgot-password/${token}`
+    const msg = `Kindly click on the link below to complete password reset \n \n ${link}`
+
+    // Send verification Link
+    const input = {
+      to: email,
+      html: msg,
+      subject: 'Reset Password'
+    }
+    await this.emailService.sendEmail(input);
+
+    return {
+      success: true,
+      message: 'Password reset link sent'
+    }
   }
 
   // Validate Password Reset
