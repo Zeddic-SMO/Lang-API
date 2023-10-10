@@ -87,13 +87,14 @@ export class AuthService {
 
     // check if user exist
     const email = response.data.email
-    const isUser = this.repository.getUserByEmail(email)
+    const isUser = await this.repository.getUserByEmail(email)
     if (!isUser) {
       throw new BadRequestException("Invalid User!")
     }
 
     // mark as active in the database
-    const updatedUser = await this.repository.updateUserInfo(email)
+    const updateData = { status: "active" }
+    const updatedUser = await this.repository.updateUserInfo(email, updateData)
 
     // Return 
     return {
@@ -102,11 +103,6 @@ export class AuthService {
       data: updatedUser
     }
 
-  }
-
-  // Send Verification Email
-  async SendVerificationEmail() {
-    return { message: 'Verification Email Sent' };
   }
 
   // Forgot password Service
@@ -138,18 +134,34 @@ export class AuthService {
     }
   }
 
-  // Validate Password Reset
-  async ValidatePasswordReset() {
-    return { message: 'Password reset initiated!' };
-  }
+  // Reset/Change Password
+  async UpdatePassword(token: string, body: { newPasswod: string, confirmPassword: string }) {
+    // Check if user input matches
+    if (body.newPasswod !== body.confirmPassword) {
+      throw new BadRequestException("Passwords does not match!")
+    }
 
-  // Change Password
-  async UpdatePassword() {
-    return { message: 'Password Reset Successful' };
-  }
+    // check if token is valid and fetch the user_ID in the token
+    const isTokenValid = this.jwtHandler.validateToken(token)
+    const email = isTokenValid.data.email
 
-  // Sign Out
-  async UserSignOut() {
-    return { message: 'User logged out' };
+    // find the user with email
+    const user = await this.repository.getUserByEmail(email)
+    if (!user) {
+      throw new NotFoundException("User does not exits!")
+    }
+
+    // Hash incoming password
+    const hashedPassword = await passwordHasher(body.newPasswod)
+
+    // update user password
+    const updateData = { password: hashedPassword }
+    await this.repository.updateUserInfo(user.email, updateData)
+
+    return {
+      success: true,
+      message: "Password updated successfully!"
+    }
+
   }
 }
