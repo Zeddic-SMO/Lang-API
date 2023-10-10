@@ -18,12 +18,26 @@ export class authRepository {
       return await this.prismaService.user.create({
         data: {
           email,
-          password,
+          password
         },
       });
     } catch (error) {
       console.error(error.message)
       throw new BadRequestException(error.message)
+    }
+  }
+
+  // Update a user record in the database
+  async updateUserInfo(email: string) {
+    try {
+      const response = await this.prismaService.user.update({ where: { email }, data: { status: "active" } })
+      return {
+        success: true,
+        message: "success",
+        data: response
+      }
+    } catch (error) {
+      throw new BadRequestException("Internal Server Error")
     }
   }
 }

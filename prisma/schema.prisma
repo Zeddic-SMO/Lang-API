@@ -15,6 +15,7 @@ model User {
   id String @unique @default(uuid())
   email String @unique
   password String
+  status String @default("inactive")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }

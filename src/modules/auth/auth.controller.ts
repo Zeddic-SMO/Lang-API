@@ -1,7 +1,7 @@
-import { Controller, Post, Get, Body, Res } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Put } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from "express"
-import { AuthDTO } from './dto/auth.dto';
+import { registerDTO, signInDTO } from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -9,20 +9,20 @@ export class AuthController {
 
   // 01. Create acount - allow user register using email and password
   @Post('register')
-  async Register(@Body() userDTO: AuthDTO) {
+  async Register(@Body() userDTO: registerDTO) {
     return await this.authService.CreateAccount(userDTO);
   }
 
   // 02. sign in - enable registered user to sign in by providing their email and password
   @Post('signin')
-  async SignIn(@Body() signDTO: AuthDTO) {
+  async SignIn(@Body() signDTO: signInDTO) {
     return await this.authService.UserSignIn(signDTO);
   }
 
   // 03. Verify account - changes the account status to verrified for users
-  @Post('verify')
-  async VerifyAccount() {
-    return await this.authService.UserVerification();
+  @Put(`verify/:token`)
+  async VerifyAccount(@Param("token") token: string) {
+    return await this.authService.UserVerification(token);
   }
 
   // 04. Resend Verification Email - allow user to resend of the email verification link

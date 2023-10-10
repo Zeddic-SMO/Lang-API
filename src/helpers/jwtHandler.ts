@@ -9,12 +9,18 @@ export class JwtHandler {
         return jwt.sign(payload, secretKey, { expiresIn });
     }
 
-    validateToken(token: string): boolean {
+    validateToken(token: string): any {
         try {
-            jwt.verify(token, secretKey);
-            return true;
+            const response = jwt.verify(token, secretKey);
+            return {
+                status: true,
+                data: response
+            };
         } catch (error) {
-            return false;
+            return {
+                status: false,
+                message: error.message
+            };
         }
     }
 }
