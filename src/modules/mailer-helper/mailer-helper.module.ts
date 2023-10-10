@@ -21,4 +21,4 @@ import { MailerModule } from '@nestjs-modules/mailer';
   providers: [MailerHelperService],
   exports: [MailerHelperService],
 })
-export class MailerHelperModule {}
+export class MailerHelperModule { }

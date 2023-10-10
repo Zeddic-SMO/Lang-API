@@ -3,8 +3,8 @@ import { PrismaService } from 'prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class DatabaseService {
-  constructor(private readonly prismaService: PrismaService) {}
+export class authRepository {
+  constructor(private readonly prismaService: PrismaService) { }
 
   // Get User by email
   async getUserByEmail(email: string) {

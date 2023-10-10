@@ -1,11 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AuthDTO } from './dto/auth.dto';
 import { passwordHasher } from '../../helpers/bcrypt';
-import { DatabaseService } from './auth.repository';
+import { authRepository } from './auth.repository';
+import { MailerHelperService } from '../mailer-helper/mailer-helper.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(private readonly repository: authRepository,
+    private readonly emailService: MailerHelperService) { }
 
   /**
    * This services function handles user account creation
@@ -17,7 +19,7 @@ export class AuthService {
     const { email, password } = userDTO;
 
     // Check if user already exists
-    const existingUser = await this.databaseService.getUserByEmail(email);
+    const existingUser = await this.repository.getUserByEmail(email);
 
     if (existingUser) {
       throw new BadRequestException('Email already exists!');
@@ -27,7 +29,7 @@ export class AuthService {
     const hashedPassword = await passwordHasher(password);
 
     // Save new user to database
-    /*   const newUser = await this.databaseService.saveNewUser(
+    /*   const newUser = await this.repository.saveNewUser(
       email,
       hashedPassword,
     ); */
@@ -36,11 +38,12 @@ export class AuthService {
     const verifyLink = 'Hello here is the verification link';
 
     // Send verification Link
-    /*  await this.emailService.sendMail(
-      'ictzoid@gmail.com',
-      'Email/Account Verification',
-      verifyLink,
-    ); */
+    const input = {
+      to: 'ictzoid@gmail.com',
+      html: verifyLink,
+      subject: 'Email/Account Verification'
+    }
+    await this.emailService.sendEmail(input);
 
     // return newUser;
     return 'Created successfully!';

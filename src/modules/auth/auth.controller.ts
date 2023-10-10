@@ -4,7 +4,7 @@ import { AuthDTO } from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   // 01. Create acount - allow user register using email and password
   @Post('register')
