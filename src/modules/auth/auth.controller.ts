@@ -10,15 +10,13 @@ export class AuthController {
   // 01. Create acount - allow user register using email and password
   @Post('register')
   async Register(@Body() userDTO: AuthDTO) {
-    const response = await this.authService.CreateAccount(userDTO);
-    return response
-    // res.status(200).json({ success: true, data: response ? response : null })
+    return await this.authService.CreateAccount(userDTO);
   }
 
   // 02. sign in - enable registered user to sign in by providing their email and password
   @Post('signin')
-  async SignIn() {
-    return await this.authService.UserSignIn();
+  async SignIn(@Body() signDTO: AuthDTO) {
+    return await this.authService.UserSignIn(signDTO);
   }
 
   // 03. Verify account - changes the account status to verrified for users
