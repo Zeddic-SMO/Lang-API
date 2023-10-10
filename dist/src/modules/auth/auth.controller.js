@@ -21,7 +21,8 @@ let AuthController = class AuthController {
         this.authService = authService;
     }
     async Register(userDTO) {
-        return await this.authService.CreateAccount(userDTO);
+        const response = await this.authService.CreateAccount(userDTO);
+        return response;
     }
     async SignIn() {
         return await this.authService.UserSignIn();

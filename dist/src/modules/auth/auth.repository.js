@@ -20,12 +20,18 @@ let authRepository = class authRepository {
         return this.prismaService.user.findUnique({ where: { email } });
     }
     async saveNewUser(email, password) {
-        return await this.prismaService.user.create({
-            data: {
-                email,
-                password,
-            },
-        });
+        try {
+            return await this.prismaService.user.create({
+                data: {
+                    email,
+                    password,
+                },
+            });
+        }
+        catch (error) {
+            console.error(error.message);
+            throw new common_1.BadRequestException(error.message);
+        }
     }
 };
 exports.authRepository = authRepository;

@@ -14,10 +14,12 @@ const common_1 = require("@nestjs/common");
 const bcrypt_1 = require("../../helpers/bcrypt");
 const auth_repository_1 = require("./auth.repository");
 const mailer_helper_service_1 = require("../mailer-helper/mailer-helper.service");
+const jwtHandler_1 = require("../../helpers/jwtHandler");
 let AuthService = class AuthService {
-    constructor(repository, emailService) {
+    constructor(repository, emailService, jwtHandler) {
         this.repository = repository;
         this.emailService = emailService;
+        this.jwtHandler = jwtHandler;
     }
     async CreateAccount(userDTO) {
         const { email, password } = userDTO;
@@ -26,14 +28,20 @@ let AuthService = class AuthService {
             throw new common_1.BadRequestException('Email already exists!');
         }
         const hashedPassword = await (0, bcrypt_1.passwordHasher)(password);
-        const verifyLink = 'Hello here is the verification link';
+        const newUser = await this.repository.saveNewUser(email, hashedPassword);
+        const token = this.jwtHandler.generateToken({ email });
+        const link = `${process.env.APP_HOST}/auth/verify/${token}`;
+        const msg = `Kindly click on the link below to verify your account \n \n ${link}`;
         const input = {
-            to: 'ictzoid@gmail.com',
-            html: verifyLink,
+            to: email,
+            html: msg,
             subject: 'Email/Account Verification'
         };
         await this.emailService.sendEmail(input);
-        return 'Created successfully!';
+        return {
+            success: true,
+            message: "Account created successfully!"
+        };
     }
     async UserSignIn() {
         return { message: '' };
@@ -61,6 +69,7 @@ exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [auth_repository_1.authRepository,
-        mailer_helper_service_1.MailerHelperService])
+        mailer_helper_service_1.MailerHelperService,
+        jwtHandler_1.JwtHandler])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

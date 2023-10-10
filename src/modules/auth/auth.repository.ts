@@ -1,6 +1,7 @@
 // eslint-disable-next-line prettier/prettier
 import { PrismaService } from 'prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+
 
 @Injectable()
 export class authRepository {
@@ -13,11 +14,16 @@ export class authRepository {
 
   // Save new user to database
   async saveNewUser(email: string, password: string) {
-    return await this.prismaService.user.create({
-      data: {
-        email,
-        password,
-      },
-    });
+    try {
+      return await this.prismaService.user.create({
+        data: {
+          email,
+          password,
+        },
+      });
+    } catch (error) {
+      console.error(error.message)
+      throw new BadRequestException(error.message)
+    }
   }
 }

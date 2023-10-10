@@ -3,11 +3,13 @@ import { AuthDTO } from './dto/auth.dto';
 import { passwordHasher } from '../../helpers/bcrypt';
 import { authRepository } from './auth.repository';
 import { MailerHelperService } from '../mailer-helper/mailer-helper.service';
+import { JwtHandler } from 'src/helpers/jwtHandler';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly repository: authRepository,
-    private readonly emailService: MailerHelperService) { }
+    private readonly emailService: MailerHelperService,
+    private readonly jwtHandler: JwtHandler) { }
 
   /**
    * This services function handles user account creation
@@ -29,24 +31,29 @@ export class AuthService {
     const hashedPassword = await passwordHasher(password);
 
     // Save new user to database
-    /*   const newUser = await this.repository.saveNewUser(
+    const newUser = await this.repository.saveNewUser(
       email,
       hashedPassword,
-    ); */
+    );
 
     // Generate verification link
-    const verifyLink = 'Hello here is the verification link';
+    const token = this.jwtHandler.generateToken({ email });
+    const link = `${process.env.APP_HOST}/auth/verify/${token}`
+    const msg = `Kindly click on the link below to verify your account \n \n ${link}`
 
     // Send verification Link
     const input = {
-      to: 'ictzoid@gmail.com',
-      html: verifyLink,
+      to: email,
+      html: msg,
       subject: 'Email/Account Verification'
     }
     await this.emailService.sendEmail(input);
 
     // return newUser;
-    return 'Created successfully!';
+    return {
+      success: true,
+      message: "Account created successfully!"
+    };
   }
 
   // User SignIn

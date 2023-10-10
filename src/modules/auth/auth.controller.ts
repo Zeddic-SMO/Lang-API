@@ -1,5 +1,6 @@
-import { Controller, Post, Get, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { Response } from "express"
 import { AuthDTO } from './dto/auth.dto';
 
 @Controller('auth')
@@ -9,7 +10,9 @@ export class AuthController {
   // 01. Create acount - allow user register using email and password
   @Post('register')
   async Register(@Body() userDTO: AuthDTO) {
-    return await this.authService.CreateAccount(userDTO);
+    const response = await this.authService.CreateAccount(userDTO);
+    return response
+    // res.status(200).json({ success: true, data: response ? response : null })
   }
 
   // 02. sign in - enable registered user to sign in by providing their email and password

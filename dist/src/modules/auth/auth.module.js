@@ -13,13 +13,14 @@ const auth_controller_1 = require("./auth.controller");
 const prisma_service_1 = require("../../../prisma/prisma.service");
 const auth_repository_1 = require("./auth.repository");
 const mailer_helper_service_1 = require("../mailer-helper/mailer-helper.service");
+const jwtHandler_1 = require("../../helpers/jwtHandler");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, prisma_service_1.PrismaService, auth_repository_1.authRepository, mailer_helper_service_1.MailerHelperService],
+        providers: [auth_service_1.AuthService, prisma_service_1.PrismaService, auth_repository_1.authRepository, mailer_helper_service_1.MailerHelperService, jwtHandler_1.JwtHandler],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map
